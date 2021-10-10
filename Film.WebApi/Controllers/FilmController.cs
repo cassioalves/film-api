@@ -1,10 +1,6 @@
 ﻿using Film.Business;
 using Film.Entity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Film.WebApi.Controllers
 {
@@ -19,8 +15,8 @@ namespace Film.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllMenus")]
-        public IActionResult GetAllMenus()
+        [Route("GetProducers")]
+        public IActionResult GetProducers()
         {
             var response = filmsBusiness.GetProducers();
 
