@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Film.Business;
+using Film.Entity;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +10,21 @@ namespace Film.WebApi.Controllers
 {
     public class FilmController : Controller
     {
-        public IActionResult Index()
+        private readonly FilmsBusiness filmsBusiness;
+        private readonly FilmContext filmContext;
+        public FilmController(FilmContext filmContext)
         {
-            return View();
+            this.filmContext = filmContext;
+            this.filmsBusiness = new FilmsBusiness(filmContext);
+        }
+
+        [HttpGet]
+        [Route("GetAllMenus")]
+        public IActionResult GetAllMenus()
+        {
+            filmsBusiness.GetProducers();
+
+            return StatusCode(200, "");
         }
     }
 }

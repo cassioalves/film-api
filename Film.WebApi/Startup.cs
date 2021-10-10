@@ -1,4 +1,4 @@
-using Film.Infra;
+using Film.Entity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,12 +29,15 @@ namespace Film.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddDbContext<FilmContext>(opt => opt.UseInMemoryDatabase("FilmApi"));
             services.AddControllers();
+            //ScopeCreator.GerarDependencias(services);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Film.WebApi", Version = "v1" });
             });
-            services.AddDbContext<FilmContext>(opt => opt.UseInMemoryDatabase("FilmApi"));
+            services.AddScoped<Business.FilmsBusiness>();
+            services.AddHostedService<BackgroundServices.FilmService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

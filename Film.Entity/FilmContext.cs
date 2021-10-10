@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Film.Infra
+namespace Film.Entity
 {
     public class FilmContext : DbContext
     {
@@ -10,6 +10,7 @@ namespace Film.Infra
             : base(options)
         {
         }
+        public DbSet<Film> Film { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,13 +20,6 @@ namespace Film.Infra
                 .FirstOrDefault();
 
             modelBuilder.ApplyConfigurationsFromAssembly(produtoEntityAssembly);
-
-            //var cascadeFKs = modelBuilder.Model.GetEntityTypes()
-            //    .SelectMany(t => t.GetForeignKeys())
-            //    .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
-
-            //foreach (var fk in cascadeFKs)
-            //    fk.DeleteBehavior = DeleteBehavior.Restrict;
 
             base.OnModelCreating(modelBuilder);
         }

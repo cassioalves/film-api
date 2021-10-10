@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Film.Infra
+namespace Film.Entity
 {
     [Serializable]
     public abstract class EntityBase : IValidatableObject
