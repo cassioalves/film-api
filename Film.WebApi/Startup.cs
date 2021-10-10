@@ -30,6 +30,7 @@ namespace Film.WebApi
         {
 
             services.AddDbContext<FilmContext>(opt => opt.UseInMemoryDatabase("FilmApi"));
+            services.AddScoped<FilmContext>();
             services.AddControllers();
             //ScopeCreator.GerarDependencias(services);
             services.AddSwaggerGen(c =>

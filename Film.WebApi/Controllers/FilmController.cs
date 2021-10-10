@@ -22,9 +22,9 @@ namespace Film.WebApi.Controllers
         [Route("GetAllMenus")]
         public IActionResult GetAllMenus()
         {
-            filmsBusiness.GetProducers();
+            var response = filmsBusiness.GetProducers();
 
-            return StatusCode(200, "");
+            return StatusCode(200, response);
         }
     }
 }

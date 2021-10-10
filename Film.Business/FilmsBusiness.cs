@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Film.Entity;
 
 namespace Film.Business
@@ -13,18 +14,53 @@ namespace Film.Business
             this.filmContext = filmContext;
         }
 
-        public void GetProducers()
+        public GetProducersResponseDto GetProducers()
         {
-            filmContext.Film.Add(new Entity.Film()
-            {
-                Producer = "",
-                Studio = "",
-                Title = "",
-                Winner = false,
-                Year = 1
-            });
+            var response = new GetProducersResponseDto();
 
-            filmContext.SaveChanges();
+            var entities = filmContext.Film.ToList();
+            var groupByList = entities.Where(l => l.Winner).GroupBy(l => l.Producer);
+            var minValue = 9999;
+            var maxValue = 0;
+
+            foreach (var item in groupByList)
+            {
+                var lastValue = 0;
+                foreach (var producer in item.OrderBy(l => l.Year))
+                {
+                    if (lastValue == 0) 
+                    {
+                        lastValue = producer.Year;
+                        continue;
+                    }
+
+                    if ((producer.Year - lastValue) < minValue)
+                    {
+                        response.Min.Clear();
+                        minValue = producer.Year - lastValue;
+                        response.Min.Add(new ProducerDto(producer.Producer, minValue, producer.Year - minValue, producer.Year));
+                    } 
+                    else if ((producer.Year - lastValue) == minValue)
+                    {
+                        response.Min.Add(new ProducerDto(producer.Producer, minValue, producer.Year - minValue, producer.Year));
+                    }
+
+                    if ((producer.Year - lastValue) > maxValue)
+                    {
+                        response.Max.Clear();
+                        maxValue = producer.Year - lastValue;
+                        response.Max.Add(new ProducerDto(producer.Producer, maxValue, producer.Year - maxValue, producer.Year));
+                    }
+                    else if ((producer.Year - lastValue) == maxValue)
+                    {
+                        response.Max.Add(new ProducerDto(producer.Producer, maxValue, producer.Year - maxValue, producer.Year));
+                    }
+
+                    lastValue = producer.Year;
+                }
+            }
+
+            return response;
         }
 
         public async void ReadFilms(StreamReader streamReader)
@@ -39,7 +75,7 @@ namespace Film.Business
                         Producer = line[3],
                         Studio = line[2],
                         Title = line[1],
-                        Winner = line[4] != null ? line[4].ToUpper().Equals("TRUE") : false,
+                        Winner = line[4] != null ? line[4].ToUpper().Equals("YES") : false,
                         Year = Convert.ToInt32(line[0])
                     });
                 }
