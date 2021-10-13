@@ -7,3 +7,7 @@ Funcionamento
  - Posteriormente é possível executar o método Rest exposto "GetProducers";
  - A ação é responsável por percorrer todos os registros e filtar os produtores que ganharam prêmios; Devolvendo o maior e o menor período consecutivo;
  - O resultado será um json contendo os dados consultados;
+
+Logs
+ - Cada importação gera um log na raíz da WebApi (Film.WebApi) com o nome no padrão (log_DATA_HORA.txt);
+ - No arquivo de log é possível verificar se houve algum erro na importação e saber o motivo/linha do problema;
