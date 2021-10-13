@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Film.Entity;
 
 namespace Film.Business
@@ -65,25 +66,45 @@ namespace Film.Business
 
         public async void ReadFilms(StreamReader streamReader)
         {
+            var sb = new StringBuilder();
+            var lineNumber = 0;
+
             while (!streamReader.EndOfStream)
             {
                 try
                 {
                     var line = streamReader.ReadLine().Split(';');
+                    lineNumber++;
+                    if (lineNumber == 1) continue;
+                    int year = 0;
+
+                    if (line.Length > 5) throw new FilmException($"Erro linha {lineNumber}! Layout fora do padrão definido (year, title, studios, producers, winner)");
+
+                    if (line[4] != null && !string.IsNullOrEmpty(line[4]) && !(line[4].ToUpper().Equals("YES") || line[4].ToUpper().Equals("NO")))
+                        throw new FilmException($"Erro linha {lineNumber}! coluna de vencedor com parâmetro diferente do esperado (yes, no)");
+
+                    if (!Int32.TryParse(line[0], out year)) throw new FilmException($"Erro linha {lineNumber}! ano informado não é um número válido");
+
                     filmContext.Film.Add(new Entity.Film()
                     {
                         Producer = line[3],
                         Studio = line[2],
                         Title = line[1],
                         Winner = line[4] != null ? line[4].ToUpper().Equals("YES") : false,
-                        Year = Convert.ToInt32(line[0])
+                        Year = year
                     });
                 }
-                catch (Exception)
+                catch (FilmException e)
                 {
-                    Console.WriteLine("erro");
+                    sb.AppendLine(e.Message);
+                }
+                catch (Exception e)
+                {
+                    sb.AppendLine(e.ToString());
                 }
             }
+
+            if (sb.ToString().Length > 0) new FileHelper().SaveTextFile(sb.ToString(), $"log_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.txt");
 
             await filmContext.SaveChangesAsync();
         }
