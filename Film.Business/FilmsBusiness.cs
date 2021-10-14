@@ -85,14 +85,36 @@ namespace Film.Business
 
                     if (!Int32.TryParse(line[0], out year)) throw new FilmException($"Erro linha {lineNumber}! ano informado não é um número válido");
 
-                    filmContext.Film.Add(new Entity.Film()
+                    var producers = line[3].Split(",");
+
+                    foreach (var item in producers)
                     {
-                        Producer = line[3],
-                        Studio = line[2],
-                        Title = line[1],
-                        Winner = line[4] != null ? line[4].ToUpper().Equals("YES") : false,
-                        Year = year
-                    });
+                        if (item.Contains(" and "))
+                        {
+                            foreach (var subItem in item.Split(" and "))
+                            {
+                                filmContext.Film.Add(new Entity.Film()
+                                {
+                                    Producer = subItem.Trim(),
+                                    Studio = line[2],
+                                    Title = line[1],
+                                    Winner = line[4] != null ? line[4].ToUpper().Equals("YES") : false,
+                                    Year = year
+                                });
+                            }
+                        }
+                        else
+                        {
+                            filmContext.Film.Add(new Entity.Film()
+                            {
+                                Producer = item.Trim(),
+                                Studio = line[2],
+                                Title = line[1],
+                                Winner = line[4] != null ? line[4].ToUpper().Equals("YES") : false,
+                                Year = year
+                            });
+                        }
+                    }
                 }
                 catch (FilmException e)
                 {
